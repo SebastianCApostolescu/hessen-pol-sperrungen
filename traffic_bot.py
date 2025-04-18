@@ -56,6 +56,7 @@ class TrafficBot(discord.Client):
 
             current_closures = {}
             new_closures = []
+            removed_closures = []
 
             # Process current closures
             for item in data['data']:
@@ -73,6 +74,11 @@ class TrafficBot(discord.Client):
                     # Check if this is a new closure
                     if closure_key not in self.known_closures:
                         new_closures.append(item)
+
+            # Check for removed closures
+            for closure_key in self.known_closures:
+                if closure_key not in current_closures:
+                    removed_closures.append(self.known_closures[closure_key])
 
             # Send alerts for new closures
             if new_closures and self.is_ready():
@@ -94,6 +100,24 @@ class TrafficBot(discord.Client):
                         embed.add_field(name="Description", value=desc, inline=False)
                         embed.add_field(name="Start", value=format_date(start_time), inline=True)
                         embed.add_field(name="End", value=format_date(end_time), inline=True)
+
+                        await channel.send(embed=embed)
+
+            # Send alerts for removed closures
+            if removed_closures and self.is_ready():
+                channel = self.get_channel(CHANNEL_ID)
+                if channel:
+                    for item in removed_closures:
+                        location = item.get('location', {}).get('description', 'Location not specified')
+                        desc = item.get('description', [{}])[0].get('value', '')
+
+                        embed = discord.Embed(
+                            title="✅ Road Closure Removed",
+                            color=discord.Color.green(),
+                            timestamp=datetime.now(pytz.timezone('Europe/Berlin'))
+                        )
+                        embed.add_field(name="Location", value=location, inline=False)
+                        embed.add_field(name="Description", value=desc, inline=False)
 
                         await channel.send(embed=embed)
 
