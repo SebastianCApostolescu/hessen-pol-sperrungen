@@ -62,4 +62,99 @@ The bot will:
 ## Data Source
 
 The data is fetched from the official Hessen Police API:
-https://webapi.polizei.hessen.de/api/traffic/ 
+https://webapi.polizei.hessen.de/api/traffic/
+
+# Server Setup Instructions
+
+## Option 1: Using System Python (Simpler)
+
+1. Install dependencies globally:
+```bash
+sudo apt update
+sudo apt install python3 python3-pip
+sudo pip3 install -r requirements.txt
+```
+
+2. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your Discord token and channel ID
+```
+
+3. Make the management script executable:
+```bash
+chmod +x manage_bot.sh
+```
+
+4. Set up systemd service:
+```bash
+# Edit traffic-bot.service with your username and correct paths
+sudo cp traffic-bot.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable traffic-bot
+sudo systemctl start traffic-bot
+```
+
+## Option 2: Using Virtual Environment (More Isolated)
+
+1. Install Python and create virtual environment:
+```bash
+sudo apt update
+sudo apt install python3 python3-pip python3-venv
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+2. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your Discord token and channel ID
+```
+
+3. Make the management script executable:
+```bash
+chmod +x manage_bot.sh
+```
+
+4. Set up systemd service:
+```bash
+# Edit traffic-bot.service with your username and correct paths
+# Make sure to update the paths to point to your virtual environment
+sudo cp traffic-bot.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable traffic-bot
+sudo systemctl start traffic-bot
+```
+
+## Management Commands
+
+Using the management script:
+```bash
+./manage_bot.sh start    # Start the bot
+./manage_bot.sh stop     # Stop the bot
+./manage_bot.sh restart  # Restart the bot
+./manage_bot.sh status   # Check bot status
+```
+
+Using systemd:
+```bash
+sudo systemctl start traffic-bot
+sudo systemctl stop traffic-bot
+sudo systemctl restart traffic-bot
+sudo systemctl status traffic-bot
+```
+
+## Logs
+
+View systemd logs:
+```bash
+sudo journalctl -u traffic-bot -f
+```
+
+## Notes
+
+- Option 1 (System Python) is simpler but installs packages globally
+- Option 2 (Virtual Environment) provides better isolation but requires more setup
+- Choose Option 1 if this is your only Python application
+- Choose Option 2 if you have multiple Python applications with different dependencies 

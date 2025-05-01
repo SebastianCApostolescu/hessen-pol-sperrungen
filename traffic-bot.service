@@ -1,0 +1,15 @@
+[Unit]
+Description=Hessen Traffic Bot
+After=network.target
+
+[Service]
+Type=simple
+User=YOUR_USERNAME
+WorkingDirectory=/path/to/traffic_info
+Environment="PATH=/path/to/traffic_info/venv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+ExecStart=/path/to/traffic_info/venv/bin/python3 /path/to/traffic_info/traffic_bot.py
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target 
