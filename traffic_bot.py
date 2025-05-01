@@ -165,6 +165,20 @@ class TrafficBot(discord.Client):
     async def on_ready(self):
         print(f'Bot is ready! Logged in as {self.user}')
         print(f'Monitoring traffic updates for channel ID: {CHANNEL_ID}')
+        
+        # Send startup message
+        channel = self.get_channel(CHANNEL_ID)
+        if channel:
+            embed = discord.Embed(
+                title="🚦 Traffic Bot Online",
+                description="I'm now monitoring road closures in Hessen. I'll send alerts for new closures and when existing ones are removed.",
+                color=discord.Color.blue(),
+                timestamp=datetime.now(pytz.timezone('Europe/Berlin'))
+            )
+            embed.add_field(name="Status", value="✅ Running", inline=True)
+            embed.add_field(name="Check Interval", value="5 minutes", inline=True)
+            embed.add_field(name="Last Update", value=format_date(datetime.now().isoformat()), inline=True)
+            await channel.send(embed=embed)
 
 def main():
     # Create bot instance
