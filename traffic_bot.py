@@ -16,6 +16,12 @@ CACHE_FILE = 'closure_cache.json'
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 CHANNEL_ID = int(os.getenv('CHANNEL_ID', 0))
 
+def truncate_text(text, max_length=1024):
+    """Truncate text to specified length, adding ellipsis if truncated"""
+    if len(text) > max_length:
+        return text[:max_length-3] + "..."
+    return text
+
 class TrafficBot(discord.Client):
     def __init__(self):
         super().__init__(intents=discord.Intents.default())
@@ -91,7 +97,7 @@ class TrafficBot(discord.Client):
                         start_time = get_time_value(duration, 'startTime')
                         end_time = get_time_value(duration, 'endTime')
 
-                        # Ensure no empty values
+                        # Ensure no empty values and truncate if needed
                         if not location.strip():
                             location = 'Location not specified'
                         if not desc.strip():
@@ -100,6 +106,10 @@ class TrafficBot(discord.Client):
                             start_time = 'Not specified'
                         if not end_time:
                             end_time = 'Not specified'
+
+                        # Truncate long descriptions
+                        desc = truncate_text(desc)
+                        location = truncate_text(location)
 
                         embed = discord.Embed(
                             title="🚨 New Road Closure Alert",
@@ -121,11 +131,15 @@ class TrafficBot(discord.Client):
                         location = item.get('location', {}).get('description', 'Location not specified')
                         desc = item.get('description', [{}])[0].get('value', 'No description available')
 
-                        # Ensure no empty values
+                        # Ensure no empty values and truncate if needed
                         if not location.strip():
                             location = 'Location not specified'
                         if not desc.strip():
                             desc = 'No description available'
+
+                        # Truncate long descriptions
+                        desc = truncate_text(desc)
+                        location = truncate_text(location)
 
                         embed = discord.Embed(
                             title="✅ Road Closure Removed",
