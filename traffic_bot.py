@@ -86,10 +86,20 @@ class TrafficBot(discord.Client):
                 if channel:
                     for item in new_closures:
                         location = item.get('location', {}).get('description', 'Location not specified')
-                        desc = item.get('description', [{}])[0].get('value', '')
+                        desc = item.get('description', [{}])[0].get('value', 'No description available')
                         duration = item.get('duration', {})
                         start_time = get_time_value(duration, 'startTime')
                         end_time = get_time_value(duration, 'endTime')
+
+                        # Ensure no empty values
+                        if not location.strip():
+                            location = 'Location not specified'
+                        if not desc.strip():
+                            desc = 'No description available'
+                        if not start_time:
+                            start_time = 'Not specified'
+                        if not end_time:
+                            end_time = 'Not specified'
 
                         embed = discord.Embed(
                             title="🚨 New Road Closure Alert",
@@ -109,7 +119,13 @@ class TrafficBot(discord.Client):
                 if channel:
                     for item in removed_closures:
                         location = item.get('location', {}).get('description', 'Location not specified')
-                        desc = item.get('description', [{}])[0].get('value', '')
+                        desc = item.get('description', [{}])[0].get('value', 'No description available')
+
+                        # Ensure no empty values
+                        if not location.strip():
+                            location = 'Location not specified'
+                        if not desc.strip():
+                            desc = 'No description available'
 
                         embed = discord.Embed(
                             title="✅ Road Closure Removed",
